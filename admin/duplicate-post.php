@@ -87,6 +87,7 @@ class DuplicatePost{
 	  	}
 
 	  	$current_roles = $current_user->roles;
+
 	  	foreach ($current_roles as $key => $role) {
 	  		//echo $value;
 	  		if(isset($settings['edit_access'])) {
@@ -127,6 +128,7 @@ class DuplicatePost{
 	  	foreach ($current_roles as $key => $role) {
 	  		//echo $value;
 	  		if(in_array($role, $settings['merge_access'])){
+
 	  			$allowed = true;
 	  			//echo "YES". $value;
 	  		}
@@ -314,6 +316,11 @@ class DuplicatePost{
 	          	?>
 	            <span id="update-waiting">Update Submitted, awaiting approval</span>
 	            <?php } ?>
+              <?php wp_nonce_field( basename( __FILE__ ), 'dem_nonce' );
+
+              $value = get_post_meta($post->ID, 'dem_notify_emails', true);?>
+
+              <textarea name="dem_notify_emails" id="dem_notify_emails" type="textarea" size="20" placeholder="Enter email address(es) of users to review changes. One email per line." class="align-left" value="<?php echo esc_attr( get_post_meta( $post->ID, 'dem_notify_emails', true ) ); ?>" size="30" /><?php echo esc_attr( get_post_meta( $post->ID, 'dem_notify_emails', true ) ); ?></textarea>
 
 	            <input name="submit_for_review" type="submit" class="button button-primary button-large<?php echo $class;?>" id="submit_for_review" value="<?php echo $submit_label; ?>">
 
@@ -327,6 +334,9 @@ class DuplicatePost{
 	          <?php endif ?>
 	      </div>
 	      <style type="text/css">
+        #publishing-action-update .align-left{
+          text-align: left;
+        }
 	      	#update-waitng{
 	      		text-align:center; display:block;
 	      	}
@@ -366,6 +376,41 @@ class DuplicatePost{
 	  }
 	}
 
+  /* Save the meta box's post metadata. */
+  public function dem_save_email ( $post_id, $post ) {
+
+    /* Verify the nonce before proceeding. */
+    if ( !isset( $_POST['dem_nonce'] ) || !wp_verify_nonce( $_POST['dem_nonce'], basename( __FILE__ ) ) )
+      return $post_id;
+
+    /* Get the post type object. */
+    $post_type = get_post_type_object( $post->post_type );
+
+    /* Check if the current user has permission to edit the post. */
+    if ( !current_user_can( $post_type->cap->edit_post, $post_id ) )
+      return $post_id;
+
+    /* Get the posted data and sanitize it  */
+    $new_meta_value = ( isset( $_POST['dem_notify_emails'] ) ? wp_kses_post( $_POST['dem_notify_emails'] ) : '' );
+
+    /* Get the meta key. */
+    $meta_key = 'dem_notify_emails';
+
+    /* Get the meta value of the custom field key. */
+    $meta_value = get_post_meta( $post_id, $meta_key, true );
+
+    /* If a new meta value was added and there was no previous value, add it. */
+    if ( $new_meta_value && '' == $meta_value )
+      add_post_meta( $post_id, $meta_key, $new_meta_value, true );
+
+    /* If the new meta value does not match the old value, update it. */
+    elseif ( $new_meta_value && $new_meta_value != $meta_value )
+      update_post_meta( $post_id, $meta_key, $new_meta_value );
+
+    /* If there is no new meta value but an old value exists, delete it. */
+    elseif ( '' == $new_meta_value && $meta_value )
+      delete_post_meta( $post_id, $meta_key, $meta_value );
+  }
 
 
 	public function cloned_post_save( $post_id ) {
@@ -902,7 +947,10 @@ class DuplicatePost{
 		add_action('post_submitbox_start', array($this,'add_cloned_doc_action_buttons') );
 		add_action( 'save_post', array($this,'cloned_post_save') );
 
-		add_action("wp_head", array($this,"add_nofollow_noindex_to_clones") );
+		add_action('wp_head', array($this,'add_nofollow_noindex_to_clones') );
+    
+    add_action( 'save_post', array($this,'dem_save_email'), 10, 2 );
+
 	}
 
 
