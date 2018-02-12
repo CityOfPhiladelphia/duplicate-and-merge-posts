@@ -6,7 +6,7 @@ require_once 'includes/duplicate-post.php';
 
 // Initialize ( optinaly pass array of options )
 DuplicatePost::_init(array(
-  "duplicate_post_title_prefix" => "Clone :: "
+	"duplicate_post_title_prefix" => "Clone :: "
 ));
 
 // To duplicate a post
@@ -69,49 +69,49 @@ class DuplicatePost{
 	 */
 	static function duplicate_post_is_current_user_allowed_to_copy() {
 		global $post;
-  		$qo = get_queried_object();
-  		$allowed = false;
-  		$settings = get_option('dem_main_settings');
-	  	$current_user = wp_get_current_user();
+			$qo = get_queried_object();
+			$allowed = false;
+			$settings = get_option('dem_main_settings');
+			$current_user = wp_get_current_user();
 
-	  	if($qo){
-        $authorID = isset($qo->post_author) ? $qo->post_author : '';
-	  		$postType = isset($qo->post_type) ? $qo->post_type : '';
-	  	} else {
-	  		if(isset($post)){
-	  			$authorID = $post->post_author;
-	  			$postType = $post->post_type;
-	  		} else {
-	  			$authorID = 0;
-	  		}
-	  	}
+			if($qo){
+				$authorID = isset($qo->post_author) ? $qo->post_author : '';
+				$postType = isset($qo->post_type) ? $qo->post_type : '';
+			} else {
+				if(isset($post)){
+					$authorID = $post->post_author;
+					$postType = $post->post_type;
+				} else {
+					$authorID = 0;
+				}
+			}
 
-	  	$current_roles = $current_user->roles;
+			$current_roles = $current_user->roles;
 
-	  	foreach ($current_roles as $key => $role) {
-	  		//echo $value;
-	  		if(isset($settings['edit_access'])) {
-	  			if(in_array($role, $settings['edit_access'])){
-	  			$allowed = true;
-	  			//echo "YES". $value;
-	  			}
-	  		}
+			foreach ($current_roles as $key => $role) {
+				//echo $value;
+				if(isset($settings['edit_access'])) {
+					if(in_array($role, $settings['edit_access'])){
+					$allowed = true;
+					//echo "YES". $value;
+					}
+				}
 
-	  	}
+			}
 
-	  	/* by default post author can copy but not merge back */
-	  	if($current_user->ID == $authorID){
-	  		$allowed = true;
-	  	}
+			/* by default post author can copy but not merge back */
+			if($current_user->ID == $authorID){
+				$allowed = true;
+			}
 
-	  	/* Exclude post types from settings */
-	  	if(isset($settings['exclude_post_types'])) {
-	  		if(is_array($settings['exclude_post_types'])){
-		  		if(in_array($postType, $settings['exclude_post_types'])){
-		  			$allowed = false;
-		  		}
-	  		}
-	  	}
+			/* Exclude post types from settings */
+			if(isset($settings['exclude_post_types'])) {
+				if(is_array($settings['exclude_post_types'])){
+					if(in_array($postType, $settings['exclude_post_types'])){
+						$allowed = false;
+					}
+				}
+			}
 
 
 		return apply_filters( "duplicate_post_is_allowed", $allowed );
@@ -123,16 +123,16 @@ class DuplicatePost{
 	static function duplicate_post_is_current_user_allowed_to_merge_back() {
 		$allowed = false;
 		$settings = get_option('dem_main_settings');
-	  	$current_user = wp_get_current_user();
-	  	$current_roles = $current_user->roles;
-	  	foreach ($current_roles as $key => $role) {
-	  		//echo $value;
-	  		if(in_array($role, $settings['merge_access'])){
+			$current_user = wp_get_current_user();
+			$current_roles = $current_user->roles;
+			foreach ($current_roles as $key => $role) {
+				//echo $value;
+				if(in_array($role, $settings['merge_access'])){
 
-	  			$allowed = true;
-	  			//echo "YES". $value;
-	  		}
-	  	}
+					$allowed = true;
+					//echo "YES". $value;
+				}
+			}
 
 		return apply_filters( "duplicate_post_is_allowed_merge_back", $allowed );
 	}
@@ -164,21 +164,21 @@ class DuplicatePost{
 	function add_nofollow_noindex_to_clones(){
 		if(!$this->get_option("duplicate_post_add_nofollow_noindex")) return;
 
-	  $qo = get_queried_object();
-	  $id = isset($qo->ID) ?$qo->ID :false;
+		$qo = get_queried_object();
+		$id = isset($qo->ID) ?$qo->ID :false;
 
-	  if($id){
-	    $original_post_id = get_post_meta($id, '_dp_original', true);
+		if($id){
+			$original_post_id = get_post_meta($id, '_dp_original', true);
 
-	    if($original_post_id){
-	      ?>
+			if($original_post_id){
+				?>
 
-	      <!-- NOFOLLOW, NOINDEX -->
-	      <meta name="robots" content="noindex,nofollow">
+				<!-- NOFOLLOW, NOINDEX -->
+				<meta name="robots" content="noindex,nofollow">
 
-	      <?php
-	    }
-	  }
+				<?php
+			}
+		}
 
 	}
 
@@ -245,178 +245,178 @@ class DuplicatePost{
 
 
 	public function remove_default_post_actions_for_cloned_docs() {
-	  global $pagenow ;
+		global $pagenow ;
 
-	  if ( $pagenow  == 'post.php' && isset( $_GET['action'] ) && $_GET['action'] == 'edit' && isset( $_GET['post'] ) ) {
+		if ( $pagenow  == 'post.php' && isset( $_GET['action'] ) && $_GET['action'] == 'edit' && isset( $_GET['post'] ) ) {
 
-	    $original_post_id = get_post_meta($_GET['post'], '_dp_original', true);
-	    if($original_post_id){
-	      ?>
+			$original_post_id = get_post_meta($_GET['post'], '_dp_original', true);
+			if($original_post_id){
+				?>
 
-	      <style type="text/css">
-	        #duplicate-action, #delete-action, #publishing-action{ display:none; }
-	      </style>
+				<style type="text/css">
+					#duplicate-action, #delete-action, #publishing-action{ display:none; }
+				</style>
 
-	      <script type="text/javascript">
-	        jQuery(document).ready(function($){
-	          $("#duplicate-action, #delete-action, #publishing-action").remove();
-	        });
-	      </script>
+				<script type="text/javascript">
+					jQuery(document).ready(function($){
+						$("#duplicate-action, #delete-action, #publishing-action").remove();
+					});
+				</script>
 
-	      <?php
-	    }
-	  }
+				<?php
+			}
+		}
 	}
 
 	public function add_cloned_doc_action_buttons(){
-	  global $pagenow, $post;
+		global $pagenow, $post;
 
-	  if ( $pagenow  == 'post.php' && isset( $_GET['action'] ) && $_GET['action'] == 'edit' && isset( $_GET['post'] ) ) {
-	  	$submitted_count = get_post_meta($post->ID,"_dp_submited", true);
-	    $original_post_id = get_post_meta($_GET['post'], '_dp_original', true);
+		if ( $pagenow  == 'post.php' && isset( $_GET['action'] ) && $_GET['action'] == 'edit' && isset( $_GET['post'] ) ) {
+			$submitted_count = get_post_meta($post->ID,"_dp_submited", true);
+			$original_post_id = get_post_meta($_GET['post'], '_dp_original', true);
 
 
-	    if($original_post_id){
-	      $label = "Update";
-	  	  $allow_submit_for_review = apply_filters( 'duplicate_post_allow_submit_for_review', DuplicatePost::duplicate_post_is_current_user_allowed_to_copy(), $original_post_id );
-	      $allow_merge_back = DuplicatePost::duplicate_post_is_current_user_allowed_to_merge_back();
+			if($original_post_id){
+				$label = "Update";
+				$allow_submit_for_review = apply_filters( 'duplicate_post_allow_submit_for_review', DuplicatePost::duplicate_post_is_current_user_allowed_to_copy(), $original_post_id );
+				$allow_merge_back = DuplicatePost::duplicate_post_is_current_user_allowed_to_merge_back();
 
-	      $merge_label = "Merge back to Original Post";
-	      $submit_label = "Submit update for review";
+				$merge_label = "Merge back to Original Post";
+				$submit_label = "Submit update for review";
 
-	    $settings = get_option('dem_main_settings');
-	  	$current_user = wp_get_current_user();
-	  	$current_roles = $current_user->roles;
-	  	foreach ($current_roles as $key => $value) {
-	  		//echo $value;
-	  		if(in_array($value, $settings['merge_access'])){
-	  			$allowed = true;
-	  			//echo "YES". $value;
-	  		}
-	  	}
+			$settings = get_option('dem_main_settings');
+			$current_user = wp_get_current_user();
+			$current_roles = $current_user->roles;
+			foreach ($current_roles as $key => $value) {
+				//echo $value;
+				if(in_array($value, $settings['merge_access'])){
+					$allowed = true;
+					//echo "YES". $value;
+				}
+			}
 
-	      ?>
-	      <div id="publishing-action-update">
-	          <span class="spinner"></span>
-	          <input name="original_publish" type="hidden" id="original_publish" value="Update">
-	            <a class="button" href="<?php echo esc_url( get_permalink( $original_post_id ) ); ?>">Go to original post</a>
+				?>
+				<div id="publishing-action-update">
+						<span class="spinner"></span>
+						<input name="original_publish" type="hidden" id="original_publish" value="Update">
+							<a class="button" href="<?php echo esc_url( get_permalink( $original_post_id ) ); ?>">Go to original post</a>
 
-	          <?php if ($allow_merge_back || $allow_submit_for_review):
-				  $diff_url = add_query_arg( array( 'page' => 'show-diff', 'post' => absint( $_GET['post'] ) ), admin_url( 'edit.php' ) );
-				  ?>
-	            <a class="button" href="<?php echo esc_url( $diff_url ); ?>">View Side-by-side difference</a>
-	          <?php endif; ?>
+						<?php if ($allow_merge_back || $allow_submit_for_review):
+					$diff_url = add_query_arg( array( 'page' => 'show-diff', 'post' => absint( $_GET['post'] ) ), admin_url( 'edit.php' ) );
+					?>
+							<a class="button" href="<?php echo esc_url( $diff_url ); ?>">View Side-by-side difference</a>
+						<?php endif; ?>
 
-	          <?php if ($allow_submit_for_review ): ?>
-	          	<?php $class = "";
+						<?php if ($allow_submit_for_review ): ?>
+							<?php $class = "";
 
-	          	if($submitted_count > 0 ){
-	          		$class=" waiting";
-	          		$submit_label = "Submit update for another review";
-	          	?>
-	            <span id="update-waiting">Update Submitted, awaiting approval</span>
-	            <?php } ?>
-              <?php wp_nonce_field( basename( __FILE__ ), 'dem_nonce' );
+							if($submitted_count > 0 ){
+								$class=" waiting";
+								$submit_label = "Submit update for another review";
+							?>
+							<span id="update-waiting">Update Submitted, awaiting approval</span>
+							<?php } ?>
+							<?php wp_nonce_field( basename( __FILE__ ), 'dem_nonce' );
 
-              $value = get_post_meta($post->ID, 'dem_notify_emails', true);?>
+							$value = get_post_meta($post->ID, 'dem_notify_emails', true);?>
 
-              <textarea name="dem_notify_emails" id="dem_notify_emails" type="textarea" size="20" placeholder="Enter email address(es) of users to review changes. One email per line." class="align-left" value="<?php echo esc_attr( get_post_meta( $post->ID, 'dem_notify_emails', true ) ); ?>" size="30" /><?php echo esc_attr( get_post_meta( $post->ID, 'dem_notify_emails', true ) ); ?></textarea>
+							<textarea name="dem_notify_emails" id="dem_notify_emails" type="textarea" size="20" placeholder="Enter email address(es) of users to review changes. One email per line." class="align-left" value="<?php echo esc_attr( get_post_meta( $post->ID, 'dem_notify_emails', true ) ); ?>" size="30" /><?php echo esc_attr( get_post_meta( $post->ID, 'dem_notify_emails', true ) ); ?></textarea>
 
-	            <input name="submit_for_review" type="submit" class="button button-primary button-large<?php echo $class;?>" id="submit_for_review" value="<?php echo $submit_label; ?>">
+							<input name="submit_for_review" type="submit" class="button button-primary button-large<?php echo $class;?>" id="submit_for_review" value="<?php echo $submit_label; ?>">
 
-	          <?php endif ?>
+						<?php endif ?>
 
-	          <?php if ($allow_merge_back): ?>
-	            <input name="merge_back" type="submit" class="button button-primary button-large" id="merge_back" value="<?php echo $merge_label; ?>">
+						<?php if ($allow_merge_back): ?>
+							<input name="merge_back" type="submit" class="button button-primary button-large" id="merge_back" value="<?php echo $merge_label; ?>">
 
-	            <input name="save_as_new" type="submit" class="button save_as_new button-primary button-large" id="save_as_new" value="Save as New Post">
-	            <input name="save_as_new_id" type="hidden" id="save_as_new_id" value="<?php echo esc_attr( $original_post_id );?>">
-	          <?php endif ?>
-	      </div>
-	      <style type="text/css">
-        #publishing-action-update .align-left{
-          text-align: left;
-        }
-	      	#update-waitng{
-	      		text-align:center; display:block;
-	      	}
-	        #publishing-action-update >*{
-	          margin-bottom:5px;
-	          width:100%;
-	          text-align: center;
-	        }
-	        .button.button-primary.button-large.save_as_new {
-	        	background: rgb(0, 144, 0);
+							<input name="save_as_new" type="submit" class="button save_as_new button-primary button-large" id="save_as_new" value="Save as New Post">
+							<input name="save_as_new_id" type="hidden" id="save_as_new_id" value="<?php echo esc_attr( $original_post_id );?>">
+						<?php endif ?>
+				</div>
+				<style type="text/css">
+				#publishing-action-update .align-left{
+					text-align: left;
+				}
+					#update-waitng{
+						text-align:center; display:block;
+					}
+					#publishing-action-update >*{
+						margin-bottom:5px;
+						width:100%;
+						text-align: center;
+					}
+					.button.button-primary.button-large.save_as_new {
+						background: rgb(0, 144, 0);
 				border-color: rgb(0, 144, 0);
 				-webkit-box-shadow: none;
 				box-shadow: none;
 				color: #fff;
 				text-decoration: none;
-	        }
-	        .button.button-primary.button-large.waiting {
+					}
+					.button.button-primary.button-large.waiting {
 				background: #5E757E;
 				border-color: #5E757E;
 				-webkit-box-shadow: none;
 				box-shadow: none;
 				color: #fff;
 				text-decoration: none;
-	        }
-	      </style>
+					}
+				</style>
 			<script type="text/javascript">
 				jQuery(document).ready(function($){
-				  	$("#merge_back, #submit_for_review").on('click', function(){
-				  		if(acf && acf.validation){
+						$("#merge_back, #submit_for_review").on('click', function(){
+							if(acf && acf.validation){
 							acf.validation.$trigger = $(this);
 						}
 					});
 				});
 			</script>
-	      <?php
-	    }
-	  }
+				<?php
+			}
+		}
 	}
 
-  /* Save the meta box's post metadata. */
-  public function dem_save_email ( $post_id, $post ) {
+	/* Save the meta box's post metadata. */
+	public function dem_save_email ( $post_id, $post ) {
 
-    /* Verify the nonce before proceeding. */
-    if ( !isset( $_POST['dem_nonce'] ) || !wp_verify_nonce( $_POST['dem_nonce'], basename( __FILE__ ) ) )
-      return $post_id;
+		/* Verify the nonce before proceeding. */
+		if ( !isset( $_POST['dem_nonce'] ) || !wp_verify_nonce( $_POST['dem_nonce'], basename( __FILE__ ) ) )
+			return $post_id;
 
-    /* Get the post type object. */
-    $post_type = get_post_type_object( $post->post_type );
+		/* Get the post type object. */
+		$post_type = get_post_type_object( $post->post_type );
 
-    /* Check if the current user has permission to edit the post. */
-    if ( !current_user_can( $post_type->cap->edit_post, $post_id ) )
-      return $post_id;
+		/* Check if the current user has permission to edit the post. */
+		if ( !current_user_can( $post_type->cap->edit_post, $post_id ) )
+			return $post_id;
 
-    /* Get the posted data and sanitize it  */
-    $new_meta_value = ( isset( $_POST['dem_notify_emails'] ) ? wp_kses_post( $_POST['dem_notify_emails'] ) : '' );
+		/* Get the posted data and sanitize it  */
+		$new_meta_value = ( isset( $_POST['dem_notify_emails'] ) ? wp_kses_post( $_POST['dem_notify_emails'] ) : '' );
 
-    /* Get the meta key. */
-    $meta_key = 'dem_notify_emails';
+		/* Get the meta key. */
+		$meta_key = 'dem_notify_emails';
 
-    /* Get the meta value of the custom field key. */
-    $meta_value = get_post_meta( $post_id, $meta_key, true );
+		/* Get the meta value of the custom field key. */
+		$meta_value = get_post_meta( $post_id, $meta_key, true );
 
-    /* If a new meta value was added and there was no previous value, add it. */
-    if ( $new_meta_value && '' == $meta_value )
-      add_post_meta( $post_id, $meta_key, $new_meta_value, true );
+		/* If a new meta value was added and there was no previous value, add it. */
+		if ( $new_meta_value && '' == $meta_value )
+			add_post_meta( $post_id, $meta_key, $new_meta_value, true );
 
-    /* If the new meta value does not match the old value, update it. */
-    elseif ( $new_meta_value && $new_meta_value != $meta_value )
-      update_post_meta( $post_id, $meta_key, $new_meta_value );
+		/* If the new meta value does not match the old value, update it. */
+		elseif ( $new_meta_value && $new_meta_value != $meta_value )
+			update_post_meta( $post_id, $meta_key, $new_meta_value );
 
-    /* If there is no new meta value but an old value exists, delete it. */
-    elseif ( '' == $new_meta_value && $meta_value )
-      delete_post_meta( $post_id, $meta_key, $meta_value );
-  }
+		/* If there is no new meta value but an old value exists, delete it. */
+		elseif ( '' == $new_meta_value && $meta_value )
+			delete_post_meta( $post_id, $meta_key, $meta_value );
+	}
 
 
 	public function cloned_post_save( $post_id ) {
 
-	  if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
-	    return;
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
+			return;
  // $new_post_id = get_post_meta($post_id, '_dp_original_backup', true);
  // $original_post_id = get_post_meta($post_id, '_dp_original', true);
  // echo $post_id;
@@ -449,162 +449,162 @@ class DuplicatePost{
 			//echo 'yes' . $original_post_id;
 		}
 		//exit;
-	  // Only allow if its a merge back or submit for review
-	  if(!isset($_POST["merge_back"]) && !isset($_POST["submit_for_review"]))
-	    return;
+		// Only allow if its a merge back or submit for review
+		if(!isset($_POST["merge_back"]) && !isset($_POST["submit_for_review"]))
+			return;
 
-	  $original_post_id = get_post_meta($post_id, '_dp_original', true);
+		$original_post_id = get_post_meta($post_id, '_dp_original', true);
 
-	  $allow_submit_for_review = DuplicatePost::duplicate_post_is_current_user_allowed_to_copy();
-	  $allow_merge_back = DuplicatePost::duplicate_post_is_current_user_allowed_to_merge_back();
+		$allow_submit_for_review = DuplicatePost::duplicate_post_is_current_user_allowed_to_copy();
+		$allow_merge_back = DuplicatePost::duplicate_post_is_current_user_allowed_to_merge_back();
 
-	  if($original_post_id){
+		if($original_post_id){
 
-	    if(isset($_POST["merge_back"])){
-	      if( $allow_merge_back ){
+			if(isset($_POST["merge_back"])){
+				if( $allow_merge_back ){
 
-	      	delete_post_meta($_POST['post_ID'], '_dp_original_backup');
-	        // Unset the merge_back to prevent infinite loop after calling _save_to_original()
+					delete_post_meta($_POST['post_ID'], '_dp_original_backup');
+					// Unset the merge_back to prevent infinite loop after calling _save_to_original()
 
-	        unset($_POST["merge_back"]);
+					unset($_POST["merge_back"]);
 
-	        DuplicatePost::_save_to_original( $post_id );
+					DuplicatePost::_save_to_original( $post_id );
 			$redirect_url = add_query_arg( array( 'post' => absint( $original_post_id ), 'action' => 'edit' ), admin_url( 'post.php' ) );
-	        wp_redirect( $redirect_url );
-	        die();
+					wp_redirect( $redirect_url );
+					die();
 
-	      }
-	    }else if(isset($_POST["submit_for_review"])){
+				}
+			}else if(isset($_POST["submit_for_review"])){
 
-	      if( $allow_submit_for_review ){
-	      	//echo 'save'; exit;
+				if( $allow_submit_for_review ){
+					//echo 'save'; exit;
 
 			// Any non numeric value will be 0.
 			$submitted_count = absint( get_post_meta($post_id,"_dp_submited", true) );
 			$submitted_count++;
 
-	        // Only notify users the first time it is submited
-	        //if( get_post_meta($post_id,"_dp_submited", true) != "yes" ){
+					// Only notify users the first time it is submited
+					//if( get_post_meta($post_id,"_dp_submited", true) != "yes" ){
 
-	          update_post_meta($post_id, "_dp_submited", $submitted_count);
+						update_post_meta($post_id, "_dp_submited", $submitted_count);
 
-	          global $current_user;
-	          get_currentuserinfo();
+						global $current_user;
+						get_currentuserinfo();
 
-	          //----------  // Notify global admins when an update is submited //  ----------//
+						//----------  // Notify global admins when an update is submited //  ----------//
 
-	          if($this->get_option('duplicate_post_global_admins') != false){
+						if($this->get_option('duplicate_post_global_admins') != false){
 					$global_admin_emails = $this->get_option('duplicate_post_global_admins');
-	          }else{
+						}else{
 					$global_admin_emails = explode("\n",get_field("global_admin_emails","options"));
-		      }
-		      if(count($global_admin_emails) == 0){
-		      	$global_admin_emails = get_bloginfo('admin_email');
-		      }
-	          $post = get_post($original_post_id);
-	          $new_post = get_post($post_id);
+					}
+					if(count($global_admin_emails) == 0){
+						$global_admin_emails = get_bloginfo('admin_email');
+					}
+						$post = get_post($original_post_id);
+						$new_post = get_post($post_id);
 
-	          $message = implode( array(
-	          	"Hello there!<br><br>",
-			    "An update has been posted for ",
-			    "<a href='".get_permalink($post->ID)."'>'".$post->post_title."'</a> ",
-			    "by <strong>".$current_user->display_name . "</strong>",
-			    "<br><br> To review and approve the change, follow this link: ",
-			    "<a href='".get_permalink($new_post->ID)."'>'".$new_post->post_title."'</a>.<br><br>",
-			    "<h2><a href='".admin_url("edit.php").'?page=show-diff&post='.$new_post->ID."'>View the side by side changes here</a></h2>"
-			  ) );
+						$message = implode( array(
+							"Hello there!<br><br>",
+					"An update has been posted for ",
+					"<a href='".get_permalink($post->ID)."'>'".$post->post_title."'</a> ",
+					"by <strong>".$current_user->display_name . "</strong>",
+					"<br><br> To review and approve the change, follow this link: ",
+					"<a href='".get_permalink($new_post->ID)."'>'".$new_post->post_title."'</a>.<br><br>",
+					"<h2><a href='".admin_url("edit.php").'?page=show-diff&post='.$new_post->ID."'>View the side by side changes here</a></h2>"
+				) );
 
-	          $message = apply_filters("duplicate_post_notification_message", $message, $post, $new_post, $current_user );
+						$message = apply_filters("duplicate_post_notification_message", $message, $post, $new_post, $current_user );
 
-	          if(!$message == false){
-	          		$from_name = get_option( 'blogname' , '');
+						if(!$message == false){
+								$from_name = get_option( 'blogname' , '');
 					$from_email = get_option( 'admin_email' );
 					$headers	= "From: " . $from_name . " <" . $from_email . ">\n";
 					$headers .= 'Content-type: text/html';
 					/* todo add filters here */
-		          wp_mail( $global_admin_emails, "[Post Update] - There is a new update pending review", $message, $headers );
+							wp_mail( $global_admin_emails, "[Post Update] - There is a new update pending review", $message, $headers );
 
-		      }
+					}
 
-	        //}
-	      }
-	    }
+					//}
+				}
+			}
 
-	  }
+		}
 	}
 
 
 
 
 	public function register_my_custom_submenu_page() {
-	  add_submenu_page( '', 'Show Differences', 'Show Differences', 'read', 'show-diff', array($this,'show_diff_callback') );
+		add_submenu_page( '', 'Show Differences', 'Show Differences', 'read', 'show-diff', array($this,'show_diff_callback') );
 	}
 
 	/* Side by side difference page content */
 	public function show_diff_callback() {
 
-	  $allow_merge_back = DuplicatePost::duplicate_post_is_current_user_allowed_to_merge_back();
+		$allow_merge_back = DuplicatePost::duplicate_post_is_current_user_allowed_to_merge_back();
 
-	  echo '<div class="wrap" id="show_diff_wrapper">';
-	    echo '<div id="icon-tools" class="icon32"></div><h2>Edit Differences</h2>';
+		echo '<div class="wrap" id="show_diff_wrapper">';
+			echo '<div id="icon-tools" class="icon32"></div><h2>Edit Differences</h2>';
 
-	  if(!isset($_GET["post"])){
-	    echo "<div id='message' class='error'><p>Post ID is required</p></div>";
-	    return;
-	  }
+		if(!isset($_GET["post"])){
+			echo "<div id='message' class='error'><p>Post ID is required</p></div>";
+			return;
+		}
 
-	  $post_id = absint( $_GET["post"] );
-	  $post = get_post($post_id);
-	  if(!$post){
-	    echo "<div id='message' class='error'><p>Post does not exist or is already merged back</p></div>";
-	    return;
-	  }
-	  if($post->post_status == "trash"){
-	    echo "<div id='message' class='error'><p>Post already been merged back</p></div>";
-	    return;
-	  }
+		$post_id = absint( $_GET["post"] );
+		$post = get_post($post_id);
+		if(!$post){
+			echo "<div id='message' class='error'><p>Post does not exist or is already merged back</p></div>";
+			return;
+		}
+		if($post->post_status == "trash"){
+			echo "<div id='message' class='error'><p>Post already been merged back</p></div>";
+			return;
+		}
 
-	  $original_post_id = get_post_meta($post_id, '_dp_original', true);
+		$original_post_id = get_post_meta($post_id, '_dp_original', true);
 
-	  if(!$original_post_id){
-	    echo "<div id='message' class='error'><p>This post does not have an original post id</p></div>";
-	    return;
-	  }
+		if(!$original_post_id){
+			echo "<div id='message' class='error'><p>This post does not have an original post id</p></div>";
+			return;
+		}
 
-	  $merge_back_link = admin_url()."?action=duplicate_post_save_to_original&post=".$post_id;
-	  echo "<div class='show_diff_actions'>";
-	    echo "<a class='button' href='".get_edit_post_link($original_post_id)."'>Go to original post</a>";
-	    echo "<a class='button' href='".get_edit_post_link($post_id)."'>Go to duplicated post</a>";
-	    if($allow_merge_back){
-	    	 echo "<a class='button button-primary' href='". esc_url( $merge_back_link ) ."'>Merge back to Original Post</a>";
-	    }
+		$merge_back_link = admin_url()."?action=duplicate_post_save_to_original&post=".$post_id;
+		echo "<div class='show_diff_actions'>";
+			echo "<a class='button' href='".get_edit_post_link($original_post_id)."'>Go to original post</a>";
+			echo "<a class='button' href='".get_edit_post_link($post_id)."'>Go to duplicated post</a>";
+			if($allow_merge_back){
+				 echo "<a class='button button-primary' href='". esc_url( $merge_back_link ) ."'>Merge back to Original Post</a>";
+			}
 
-	  echo "</div>";
+		echo "</div>";
 
-	  echo $this->get_side_by_side_diff($post_id, $original_post_id);
+		echo $this->get_side_by_side_diff($post_id, $original_post_id);
 
-	  echo '</div>';
-	  ?>
-	    <style type="text/css">
-	      #show_diff_wrapper{
-	        position:relative;
-	      }
-	      #show_diff_wrapper h2{
-	        margin-bottom:20px;
-	      }
-	      #show_diff_wrapper .show_diff_actions{
-	        position:absolute;
-	        top:10px;
-	        right:0px;
-	      }
-	      #show_diff_wrapper .show_diff_actions a{
-	        margin-right:10px;
-	      }
-	      #show_diff_wrapper .show_diff_actions a.button-primary{
-	        margin-right:0px;
-	      }
-	    </style>
-	  <?php
+		echo '</div>';
+		?>
+			<style type="text/css">
+				#show_diff_wrapper{
+					position:relative;
+				}
+				#show_diff_wrapper h2{
+					margin-bottom:20px;
+				}
+				#show_diff_wrapper .show_diff_actions{
+					position:absolute;
+					top:10px;
+					right:0px;
+				}
+				#show_diff_wrapper .show_diff_actions a{
+					margin-right:10px;
+				}
+				#show_diff_wrapper .show_diff_actions a.button-primary{
+					margin-right:0px;
+				}
+			</style>
+		<?php
 	}
 
 
@@ -630,15 +630,15 @@ class DuplicatePost{
 		$acf_meta = get_post_custom( $original_post_id );
 		$acf_field_keys = array();
 		foreach ( $acf_meta as $key => $val ) {
-		    if ( preg_match( "/^field_/", $val[0] ) ) {
-		    	if (function_exists('get_field_object')) {
-		    	$acf_field = get_field_object( $val[0] );
-			    if($acf_field["type"] == "tab" || in_array($acf_field["key"], $acf_field_keys) ) continue;
+				if ( preg_match( "/^field_/", $val[0] ) ) {
+					if (function_exists('get_field_object')) {
+					$acf_field = get_field_object( $val[0] );
+					if($acf_field["type"] == "tab" || in_array($acf_field["key"], $acf_field_keys) ) continue;
 
-			    $acf_field_keys[] = $acf_field["key"];
-			    $fields[] = array("type"=>"acf", "name"=>$acf_field["key"]);
+					$acf_field_keys[] = $acf_field["key"];
+					$fields[] = array("type"=>"acf", "name"=>$acf_field["key"]);
 				}
-		    }
+				}
 		}
 
 		// Get post taxonomies
@@ -647,10 +647,10 @@ class DuplicatePost{
 		// Include two sample files for comparison
 		echo "<div class='all_differences'>";
 		echo "<table width='100%' class='Differences diff_header'><tr>
-		  <th></th>
-		  <td>Old: <a href='".get_edit_post_link($original_post)."'>".$original_post->post_title."</a></td>
-		  <th></th>
-		  <td>New: <a href='".get_edit_post_link($post)."'>".$post->post_title."</a></td>
+			<th></th>
+			<td>Old: <a href='".get_edit_post_link($original_post)."'>".$original_post->post_title."</a></td>
+			<th></th>
+			<td>New: <a href='".get_edit_post_link($post)."'>".$post->post_title."</a></td>
 		</tr></table>";
 		foreach($fields as $field){
 
@@ -661,10 +661,10 @@ class DuplicatePost{
 		$diff_html = wp_text_diff( $a, $b );
 
 		if($diff_html != ""){
-		  ?>
-		  <h3 class="diff_field_title"><?php echo $field["label"]; ?></h3>
-		  <?php
-		  echo $diff_html;
+			?>
+			<h3 class="diff_field_title"><?php echo $field["label"]; ?></h3>
+			<?php
+			echo $diff_html;
 		}
 		}
 		echo "</div>";
@@ -673,63 +673,63 @@ class DuplicatePost{
 		<style type="text/css">
 		.ChangeReplace, .Differences.DifferencesSideBySide {max-width: 100%;}
 		.all_differences{
-		  background:white;
-		  padding:15px;
-		  box-shadow: 0 1px 3px rgba(0,0,0,.1);
+			background:white;
+			padding:15px;
+			box-shadow: 0 1px 3px rgba(0,0,0,.1);
 		}
 		.Differences {
-		  width:100%;
+			width:100%;
 		}
 		.Differences td{
-		  width:46%;
+			width:46%;
 		}
 		.Differences .Left{
 		}
 		.Differences .ChangeInsert .Right{
-		  background:#e9ffe9;
+			background:#e9ffe9;
 		}
 		.Differences .ChangeInsert .Right ins{
-		  background:#afa;
+			background:#afa;
 		}
 		.Differences .ChangeDelete .Left{
-		  background:#ffe9e9;
+			background:#ffe9e9;
 		}
 		.Differences .ChangeDelete .Left del{
-		  background:#faa;
+			background:#faa;
 		}
 		.Differences .ChangeReplace .Right{
-		  background:#e9ffe9;
+			background:#e9ffe9;
 		}
 		.Differences .ChangeReplace .Right ins{
-		  background:#afa;
+			background:#afa;
 		}
 		.Differences .ChangeReplace .Left{
-		  background:#ffe9e9;
+			background:#ffe9e9;
 		}
 		.Differences .ChangeReplace .Left del{
-		  background:#faa;
+			background:#faa;
 		}
 		.Differences tr td{
-		  padding:5px 5px;
+			padding:5px 5px;
 		}
 		.Differences th:first-child{
-		  display:none;
+			display:none;
 		}
 		.Differences th{
-		  text-indent:-100000;
-		  width:4%;
-		  color:white;
-		  font-size:0px;
+			text-indent:-100000;
+			width:4%;
+			color:white;
+			font-size:0px;
 		}
 		.diff_field_title{
-		  margin-top:20px;
-		  padding-bottom:5px;
-		  border-bottom:1px solid rgba(0,0,0,0.1);
+			margin-top:20px;
+			padding-bottom:5px;
+			border-bottom:1px solid rgba(0,0,0,0.1);
 		}
 		.diff_header{
-		  padding-top:20px;
-		  text-align: center;
-		  font-size:18px;
+			padding-top:20px;
+			text-align: center;
+			font-size:18px;
 		}
 		</style>
 		<?php
@@ -739,149 +739,149 @@ class DuplicatePost{
 
 	/* Get formated acf fields that belong to a field group */
 	private function get_acf_field_for_diff( $field_group ){
-	  $acf_fields = $this->my_acf_get_fields_in_group( $field_group );
-	  $fields = array();
-	  foreach($acf_fields as $acf_field){
-	    if($acf_field["type"] == "tab") continue;
-	    $fields[] = array("type"=>"acf", "name"=>$acf_field["key"]);
-	  }
-	  return $fields;
+		$acf_fields = $this->my_acf_get_fields_in_group( $field_group );
+		$fields = array();
+		foreach($acf_fields as $acf_field){
+			if($acf_field["type"] == "tab") continue;
+			$fields[] = array("type"=>"acf", "name"=>$acf_field["key"]);
+		}
+		return $fields;
 	}
 
 	/* Get formated taxonomies of a certain post */
 	private function get_post_taxonomies_for_diff($post){
-	  $fields = array();
-	  $taxonomies = get_object_taxonomies($post);
-	  foreach($taxonomies as $taxonomy){
-	    $fields[] = array("type"=>"taxonomy", "name"=>$taxonomy );
-	  }
-	  return $fields;
+		$fields = array();
+		$taxonomies = get_object_taxonomies($post);
+		foreach($taxonomies as $taxonomy){
+			$fields[] = array("type"=>"taxonomy", "name"=>$taxonomy );
+		}
+		return $fields;
 	}
 
 	/* Get value of a field as a string */
 	private function get_string_value( &$obj , $post_id, $post, $acf_field_value=null ){
-	  $type = strtolower($obj["type"]);
-	  $name = strtolower($obj["name"]);
+		$type = strtolower($obj["type"]);
+		$name = strtolower($obj["name"]);
 
-	  switch( $type ){
-	    case "acf":
-	      if (function_exists('get_field_object')) {
-		      $field_obj = get_field_object( $name );
-		      $acf_field_type = $field_obj["type"];
-		      $acf_field_key = $field_obj["key"];
+		switch( $type ){
+			case "acf":
+				if (function_exists('get_field_object')) {
+					$field_obj = get_field_object( $name );
+					$acf_field_type = $field_obj["type"];
+					$acf_field_key = $field_obj["key"];
 
-		      if($acf_field_value == null){
-		        $field_value = get_field( $acf_field_key, $post_id );
-		        if(!$field_value) return "";
-		      }else{
-		        $field_value = $acf_field_value;
-		      }
+					if($acf_field_value == null){
+						$field_value = get_field( $acf_field_key, $post_id );
+						if(!$field_value) return "";
+					}else{
+						$field_value = $acf_field_value;
+					}
 
-		      $field_tab = $this->is_in_tab( $field_obj );
-		      $obj["label"] = ( $field_tab != null? $field_tab["label"].": " :"" ) .  $field_obj["label"];
+					$field_tab = $this->is_in_tab( $field_obj );
+					$obj["label"] = ( $field_tab != null? $field_tab["label"].": " :"" ) .  $field_obj["label"];
 
-		      if( in_array( $acf_field_type, array("text", "wysiwyg", "wp_wysiwyg") ) ){
-		        return $field_value;
+					if( in_array( $acf_field_type, array("text", "wysiwyg", "wp_wysiwyg") ) ){
+						return $field_value;
 
-		      }else if( $acf_field_type == "checkbox" ){
-		        foreach($field_value as $key=>$field_value_item){
-		          $field_value[$key] = "• ".$field_obj["choices"][$field_value_item];
-		        }
-		        return implode("\n", $field_value);
+					}else if( $acf_field_type == "checkbox" ){
+						foreach($field_value as $key=>$field_value_item){
+							$field_value[$key] = "• ".$field_obj["choices"][$field_value_item];
+						}
+						return implode("\n", $field_value);
 
-		      }else if( $acf_field_type == "relationship" ){
-		        foreach($field_value as $key=>$field_value_item){
-		          $field_value[$key] = "• ".$field_value_item->post_title."  ( ".get_permalink($field_value_item->ID)." )";
-		        }
-		        return implode("\n", $field_value);
+					}else if( $acf_field_type == "relationship" ){
+						foreach($field_value as $key=>$field_value_item){
+							$field_value[$key] = "• ".$field_value_item->post_title."  ( ".get_permalink($field_value_item->ID)." )";
+						}
+						return implode("\n", $field_value);
 
-		      }else if( $acf_field_type == "repeater" ){
+					}else if( $acf_field_type == "repeater" ){
 
-		        foreach($field_value as $key=>$field_value_item){
-		          $field_row_val = "";
-		          foreach($field_obj["sub_fields"] as $skey=>$sub_field){
-		            $field_obj_ = array("type"=>"acf", "name"=>$sub_field["key"]);
-		            $sub_field_value = $this->get_string_value( $field_obj_ , $post_id, $post , $field_value_item[$sub_field["name"]] );
-		            $field_row_val .= $sub_field["label"]. ": ".$sub_field_value. " , ";
-		          }
-		          $field_value[$key] = "• ".$field_row_val;
-		        }
+						foreach($field_value as $key=>$field_value_item){
+							$field_row_val = "";
+							foreach($field_obj["sub_fields"] as $skey=>$sub_field){
+								$field_obj_ = array("type"=>"acf", "name"=>$sub_field["key"]);
+								$sub_field_value = $this->get_string_value( $field_obj_ , $post_id, $post , $field_value_item[$sub_field["name"]] );
+								$field_row_val .= $sub_field["label"]. ": ".$sub_field_value. " , ";
+							}
+							$field_value[$key] = "• ".$field_row_val;
+						}
 
-		        return implode("\n", $field_value);
+						return implode("\n", $field_value);
 
-		      }else if( $acf_field_type == "image" ){
-		        return $field_value;
-		      }
-		  }
-	      break;
+					}else if( $acf_field_type == "image" ){
+						return $field_value;
+					}
+			}
+				break;
 
-	    case "wp":
-	      $obj["label"] = $name;
-	      if($name == "content"){
-	        return $post->post_content;
-	      }
-	      break;
-	    case "taxonomy":
-	      $tax_obj = get_taxonomy($name);
-	      $obj["label"] = $tax_obj->labels->singular_name;
-	      if($obj["label"] == "") $obj["label"] = $tax_obj->name;
-	      if($obj["label"] == "") $obj["label"] = $name;
+			case "wp":
+				$obj["label"] = $name;
+				if($name == "content"){
+					return $post->post_content;
+				}
+				break;
+			case "taxonomy":
+				$tax_obj = get_taxonomy($name);
+				$obj["label"] = $tax_obj->labels->singular_name;
+				if($obj["label"] == "") $obj["label"] = $tax_obj->name;
+				if($obj["label"] == "") $obj["label"] = $name;
 
-	      $terms = array();
-	      $wp_terms = wp_get_post_terms($post_id, $name);
-	      foreach($wp_terms as $wp_term){
-	        $terms[] = "• ".$wp_term->name;
-	      }
-	      return implode("\n", $terms);
+				$terms = array();
+				$wp_terms = wp_get_post_terms($post_id, $name);
+				foreach($wp_terms as $wp_term){
+					$terms[] = "• ".$wp_term->name;
+				}
+				return implode("\n", $terms);
 
-	  }
+		}
 	}
 
 	/* Check if a field is in tab, if so return the tab field object */
 	private function is_in_tab( $field_obj ){
 
-	  $tab = null;
-	  $acf_fields = $this->my_acf_get_fields_in_group( $field_obj["field_group"] );
+		$tab = null;
+		$acf_fields = $this->my_acf_get_fields_in_group( $field_obj["field_group"] );
 
-	  foreach($acf_fields as $key=>$acf_field){
-	    if($acf_field["key"] == $field_obj["key"]){
-	      return $tab;
-	    }
-	    if($acf_field["type"] == "tab"){
-	      $tab = $acf_field;
-	    }
-	  }
+		foreach($acf_fields as $key=>$acf_field){
+			if($acf_field["key"] == $field_obj["key"]){
+				return $tab;
+			}
+			if($acf_field["type"] == "tab"){
+				$tab = $acf_field;
+			}
+		}
 
 	}
 
 	/* Get ACF Fields that belong to certain ACF Fields Group */
 	private function my_acf_get_fields_in_group( $group_id ) {
-	    global $acf_group_fields;
-	    if(!$acf_group_fields) $acf_group_fields = array();
+			global $acf_group_fields;
+			if(!$acf_group_fields) $acf_group_fields = array();
 
-	    // Check if we already got these fields. If so just return them
-	    if(isset($acf_group_fields[$group_id])) return $acf_group_fields[$group_id];
+			// Check if we already got these fields. If so just return them
+			if(isset($acf_group_fields[$group_id])) return $acf_group_fields[$group_id];
 
-	    $acf_meta = get_post_custom( $group_id );
-	    $acf_fields = array();
+			$acf_meta = get_post_custom( $group_id );
+			$acf_fields = array();
 
-	    if(!$acf_meta) return array();
+			if(!$acf_meta) return array();
 
-	    foreach ( $acf_meta as $key => $val ) {
-	        if ( preg_match( "/^field_/", $key ) ) {
-	            $acf_fields[$key] = unserialize($val[0]);
-	        }
-	    }
+			foreach ( $acf_meta as $key => $val ) {
+					if ( preg_match( "/^field_/", $key ) ) {
+							$acf_fields[$key] = unserialize($val[0]);
+					}
+			}
 
-	    // Order fields.
-	    usort($acf_fields, function($a, $b){
-	      if($a["order_no"] == $b["order_no"]) return 0;
-	      return $a["order_no"] > $b["order_no"] ? 1 : -1;
-	    });
+			// Order fields.
+			usort($acf_fields, function($a, $b){
+				if($a["order_no"] == $b["order_no"]) return 0;
+				return $a["order_no"] > $b["order_no"] ? 1 : -1;
+			});
 
-	    $acf_group_fields[$group_id] = $acf_fields;
+			$acf_group_fields[$group_id] = $acf_fields;
 
-	    return $acf_fields;
+			return $acf_fields;
 	}
 
 
@@ -894,12 +894,12 @@ class DuplicatePost{
 		$original_post_id = get_post_meta($options['post_id'], '_dp_original', true);
 		if($original_post_id){
 
-	        if($rule['operator'] == "=="){
-	        	$match = ( $original_post_id == $rule['value'] );
-	        }
-	        elseif($rule['operator'] == "!="){
-	        	$match = ( $original_post_id != $rule['value'] );
-	        }
+					if($rule['operator'] == "=="){
+						$match = ( $original_post_id == $rule['value'] );
+					}
+					elseif($rule['operator'] == "!="){
+						$match = ( $original_post_id != $rule['value'] );
+					}
 
 		}
 
@@ -949,7 +949,7 @@ class DuplicatePost{
 
 		add_action('wp_head', array($this,'add_nofollow_noindex_to_clones') );
 
-    add_action( 'save_post', array($this,'dem_save_email'), 10, 2 );
+		add_action( 'save_post', array($this,'dem_save_email'), 10, 2 );
 
 	}
 
@@ -970,20 +970,20 @@ class DuplicatePost{
 		$allowed = DuplicatePost::duplicate_post_is_current_user_allowed_to_copy();
 
 		/*global $post;
-  		$qo = get_queried_object();
-  		$allowed = false;
-  		$settings = get_option('dem_main_settings');
-	  	$current_user = wp_get_current_user();
+			$qo = get_queried_object();
+			$allowed = false;
+			$settings = get_option('dem_main_settings');
+			$current_user = wp_get_current_user();
 
-	  	if($qo){
-	  		$authorID = $qo->post_author;
-	  	} else {
-	  		if(isset($post)){
-	  			$authorID = $post->post_author;
-	  		} else {
-	  			$authorID = 0;
-	  		}
-	  	}*/
+			if($qo){
+				$authorID = $qo->post_author;
+			} else {
+				if(isset($post)){
+					$authorID = $post->post_author;
+				} else {
+					$authorID = 0;
+				}
+			}*/
 
 		if ( isset( $_GET['post'] ) && $allowed) {
 			$backup = get_post_meta($_GET['post'], '_dp_original_backup', true);
@@ -1023,9 +1023,9 @@ class DuplicatePost{
 			if($original_post_id){
 				$this->save_to_original( $_GET["post"] );
 
-		        wp_redirect( admin_url("post.php")."?post={$original_post_id}&action=edit" );
-		        die();
-		    }
+						wp_redirect( admin_url("post.php")."?post={$original_post_id}&action=edit" );
+						die();
+				}
 		}
 	}
 
@@ -1041,9 +1041,9 @@ class DuplicatePost{
 		{
 			$wp_admin_bar->add_menu( array(
 				'parent' => '',
-		        'id' => 'new_draft',
-		        'title' => __("Duplicate & Edit this " . ucfirst ($current_object->post_type), 'dem'),
-		        'href' => DuplicatePost::duplicate_post_get_clone_post_link( $current_object->ID )
+						'id' => 'new_draft',
+						'title' => __("Duplicate & Edit this " . ucfirst ($current_object->post_type), 'dem'),
+						'href' => DuplicatePost::duplicate_post_get_clone_post_link( $current_object->ID )
 			) );
 		}
 	}
@@ -1218,14 +1218,14 @@ class DuplicatePost{
 			$new_post["post_author"] 	= $to_post->post_author;
 		}
 
-                if($this->get_option('duplicate_post_copydate') == 1 && empty( $to_post_id ) ){
-                        $new_post['post_date'] = $new_post_date =  $post_to_dup->post_date ;
-                        $new_post['post_date_gmt'] = get_gmt_from_date($new_post_date);
-                } else if( ! empty( $to_post_id ) ) {
-                        // We are merging back, do not override publish date
-                        $new_post['post_date'] = $new_post_date =  $to_post->post_date ;
-                        $new_post['post_date_gmt'] = get_gmt_from_date($new_post_date);
-                }
+								if($this->get_option('duplicate_post_copydate') == 1 && empty( $to_post_id ) ){
+												$new_post['post_date'] = $new_post_date =  $post_to_dup->post_date ;
+												$new_post['post_date_gmt'] = get_gmt_from_date($new_post_date);
+								} else if( ! empty( $to_post_id ) ) {
+												// We are merging back, do not override publish date
+												$new_post['post_date'] = $new_post_date =  $to_post->post_date ;
+												$new_post['post_date_gmt'] = get_gmt_from_date($new_post_date);
+								}
 
 		$new_post_id = wp_insert_post($new_post);
 		delete_post_meta($new_post_id, '_dp_original_backup');
