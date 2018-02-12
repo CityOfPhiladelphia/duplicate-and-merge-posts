@@ -75,8 +75,8 @@ class DuplicatePost{
 	  	$current_user = wp_get_current_user();
 
 	  	if($qo){
-	  		$authorID = $qo->post_author;
-	  		$postType = $qo->post_type;
+        $authorID = isset($qo->post_author) ? $qo->post_author : '';
+	  		$postType = isset($qo->post_type) ? $qo->post_type : '';
 	  	} else {
 	  		if(isset($post)){
 	  			$authorID = $post->post_author;
@@ -948,7 +948,7 @@ class DuplicatePost{
 		add_action( 'save_post', array($this,'cloned_post_save') );
 
 		add_action('wp_head', array($this,'add_nofollow_noindex_to_clones') );
-    
+
     add_action( 'save_post', array($this,'dem_save_email'), 10, 2 );
 
 	}
