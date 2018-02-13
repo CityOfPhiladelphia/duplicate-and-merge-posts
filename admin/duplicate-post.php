@@ -483,7 +483,7 @@ class DuplicatePost{
 			$submitted_count = absint( get_post_meta($post_id,"_dp_submited", true) );
 			$submitted_count++;
 
-					// Only notify users the first time it is submited
+					// Only notify users the first time it is submitted
 					//if( get_post_meta($post_id,"_dp_submited", true) != "yes" ){
 
 						update_post_meta($post_id, "_dp_submited", $submitted_count);
@@ -491,12 +491,13 @@ class DuplicatePost{
 						global $current_user;
 						get_currentuserinfo();
 
-						//----------  // Notify global admins when an update is submited //  ----------//
-
-						if($this->get_option('duplicate_post_global_admins') != false){
-					$global_admin_emails = $this->get_option('duplicate_post_global_admins');
-						}else{
-					$global_admin_emails = explode("\n",get_field("global_admin_emails","options"));
+						//----------  // Notify local admins, if none, notify global when an update is submitted //  ----------//
+					if ( get_post_meta( $post_id, 'dem_notify_emails' ) != null ) {
+						$global_admin_emails = get_post_meta( $post_id, 'dem_notify_emails' );
+					} elseif ($this->get_option('duplicate_post_global_admins') != false){
+						$global_admin_emails = $this->get_option('duplicate_post_global_admins');
+					}else{
+						$global_admin_emails = explode("\n",get_field("global_admin_emails","options"));
 					}
 					if(count($global_admin_emails) == 0){
 						$global_admin_emails = get_bloginfo('admin_email');
@@ -505,14 +506,12 @@ class DuplicatePost{
 						$new_post = get_post($post_id);
 
 						$message = implode( array(
-							"Hello there!<br><br>",
-					"An update has been posted for ",
-					"<a href='".get_permalink($post->ID)."'>'".$post->post_title."'</a> ",
-					"by <strong>".$current_user->display_name . "</strong>",
-					"<br><br> To review and approve the change, follow this link: ",
-					"<a href='".get_permalink($new_post->ID)."'>'".$new_post->post_title."'</a>.<br><br>",
-					"<h2><a href='".admin_url("edit.php").'?page=show-diff&post='.$new_post->ID."'>View the side by side changes here</a></h2>"
-				) );
+						"An update has been made for ",
+						"<a href='".get_permalink($post->ID)."'>'".$post->post_title."'</a> ",
+						"by <strong>".$current_user->display_name . "</strong>",
+						"<br><br> To review and approve the change, follow this link: ",
+						"<a href='".get_permalink($new_post->ID)."'>'".$new_post->post_title."'</a>."
+					) );
 
 						$message = apply_filters("duplicate_post_notification_message", $message, $post, $new_post, $current_user );
 
