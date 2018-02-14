@@ -281,7 +281,7 @@ class DuplicatePost{
 				$allow_submit_for_review = apply_filters( 'duplicate_post_allow_submit_for_review', DuplicatePost::duplicate_post_is_current_user_allowed_to_copy(), $original_post_id );
 				$allow_merge_back = DuplicatePost::duplicate_post_is_current_user_allowed_to_merge_back();
 
-				$merge_label = "Merge back to Original Post";
+				$merge_label = "Merge into original ".get_post_type_object(get_post_type())->labels->singular_name  . "";
 				$submit_label = "Submit update for review";
 
 			$settings = get_option('dem_main_settings');
@@ -299,22 +299,16 @@ class DuplicatePost{
 				<div id="publishing-action-update">
 						<span class="spinner"></span>
 						<input name="original_publish" type="hidden" id="original_publish" value="Update">
-							<a class="button" href="<?php echo esc_url( get_permalink( $original_post_id ) ); ?>">Go to original post</a>
-
-						<?php if ($allow_merge_back || $allow_submit_for_review):
-					$diff_url = add_query_arg( array( 'page' => 'show-diff', 'post' => absint( $_GET['post'] ) ), admin_url( 'edit.php' ) );
-					?>
-							<a class="button" href="<?php echo esc_url( $diff_url ); ?>">View Side-by-side difference</a>
-						<?php endif; ?>
+							<a class="button" href="<?php echo esc_url( get_permalink( $original_post_id ) ); ?>">Go to original <?php echo get_post_type_object(get_post_type())->labels->singular_name; ?></a>
 
 						<?php if ($allow_submit_for_review ): ?>
 							<?php $class = "";
 
 							if($submitted_count > 0 ){
 								$class=" waiting";
-								$submit_label = "Submit update for another review";
+								$submit_label = "Submit for another review";
 							?>
-							<span id="update-waiting">Update Submitted, awaiting approval</span>
+							<span id="update-waiting">Update submitted, awaiting approval</span>
 							<?php } ?>
 							<?php wp_nonce_field( basename( __FILE__ ), 'dem_nonce' );
 
@@ -329,7 +323,7 @@ class DuplicatePost{
 						<?php if ($allow_merge_back): ?>
 							<input name="merge_back" type="submit" class="button button-primary button-large" id="merge_back" value="<?php echo $merge_label; ?>">
 
-							<input name="save_as_new" type="submit" class="button save_as_new button-primary button-large" id="save_as_new" value="Save as New Post">
+							<input name="save_as_new" type="submit" class="button save_as_new button-primary button-large" id="save_as_new" value="Save as new <?php echo get_post_type_object(get_post_type())->labels->singular_name;?>">
 							<input name="save_as_new_id" type="hidden" id="save_as_new_id" value="<?php echo esc_attr( $original_post_id );?>">
 						<?php endif ?>
 				</div>
@@ -572,10 +566,10 @@ class DuplicatePost{
 
 		$merge_back_link = admin_url()."?action=duplicate_post_save_to_original&post=".$post_id;
 		echo "<div class='show_diff_actions'>";
-			echo "<a class='button' href='".get_edit_post_link($original_post_id)."'>Go to original post</a>";
-			echo "<a class='button' href='".get_edit_post_link($post_id)."'>Go to duplicated post</a>";
+			echo "<a class='button' href='".get_edit_post_link($original_post_id)."'>Go to original" . get_post_type_object(get_post_type())->labels->singular_name . "</a>";
+			echo "<a class='button' href='".get_edit_post_link($post_id)."'>Go to duplicated" . get_post_type_object(get_post_type())->labels->singular_name  ."</a>";
 			if($allow_merge_back){
-				 echo "<a class='button button-primary' href='". esc_url( $merge_back_link ) ."'>Merge back to Original Post</a>";
+				 echo "<a class='button button-primary' href='". esc_url( $merge_back_link ) ."'>Merge back to Original " . get_post_type_object(get_post_type())->labels->singular_name  ."</a>";
 			}
 
 		echo "</div>";
