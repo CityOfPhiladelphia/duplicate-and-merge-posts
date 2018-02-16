@@ -915,9 +915,9 @@ class DuplicatePost{
 			add_action( 'post_submitbox_start', array($this,'duplicate_post_add_duplicate_post_button') );
 		}
 
-		if ($this->get_option('duplicate_post_show_adminbar') == 1){
-			add_action( 'wp_before_admin_bar_render', array($this,'duplicate_post_admin_bar_render') );
-		}
+		// if ($this->get_option('duplicate_post_show_adminbar') == 1){
+		// 	add_action( 'wp_before_admin_bar_render', array($this,'duplicate_post_admin_bar_render') );
+		// }
 
 		add_action('admin_action_duplicate_post_save_as_new_post', array($this,'duplicate_post_save_as_new_post'));
 		add_action('admin_action_duplicate_post_save_as_new_post_draft', array($this,'duplicate_post_save_as_new_post_draft'));
