@@ -297,7 +297,6 @@ class DuplicatePost{
 
 				?>
 				<div id="publishing-action-update">
-						<span class="spinner"></span>
 						<input name="original_publish" type="hidden" id="original_publish" value="Update">
 							<a class="button" href="<?php echo esc_url( get_permalink( $original_post_id ) ); ?>">Go to original <?php echo get_post_type_object(get_post_type())->labels->singular_name; ?></a>
 
