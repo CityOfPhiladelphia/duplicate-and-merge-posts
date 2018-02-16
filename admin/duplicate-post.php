@@ -948,8 +948,8 @@ class DuplicatePost{
 	function duplicate_post_make_duplicate_link_row($actions, $post) {
 		if (DuplicatePost::duplicate_post_is_current_user_allowed_to_copy()) {
 			$actions['clone'] = '<a href="'.DuplicatePost::duplicate_post_get_clone_post_link( $post->ID , 'display', false).'" title="'
-			. esc_attr(__("Clone this item", 'dem'))
-			. '">' .  __('Clone', 'dem') . '</a>';
+			. esc_attr(__("Duplicate this item", 'dem'))
+			. '">' .  __('Duplicate', 'dem') . '</a>';
 			/*$actions['edit_as_new_draft'] = '<a href="'. DuplicatePost::duplicate_post_get_clone_post_link( $post->ID ) .'" title="'
 			. esc_attr(__('Copy to a new draft', 'dem'))
 			. '">' .  __('New Draft', 'dem') . '</a>';*/
