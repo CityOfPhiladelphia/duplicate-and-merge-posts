@@ -500,11 +500,10 @@ class DuplicatePost{
 						$new_post = get_post($post_id);
 
 						$message = implode( array(
-						"An update has been made for ",
+						"<strong>".$current_user->display_name . "</strong> has requested changes to: ",
 						"<a href='".get_permalink($post->ID)."'>'".$post->post_title."'</a> ",
-						"by <strong>".$current_user->display_name . "</strong>",
 						"<br><br> To review and approve the change, follow this link: ",
-						"<a href='".get_permalink($new_post->ID)."'>'".$new_post->post_title."'</a>."
+						"<a href='".get_permalink($new_post->ID)."'>'".$new_post->post_title."'</a>.<br /><br /> <i>Note: You must be logged in to the website in order to view changes.</i>"
 					) );
 
 						$message = apply_filters("duplicate_post_notification_message", $message, $post, $new_post, $current_user );
