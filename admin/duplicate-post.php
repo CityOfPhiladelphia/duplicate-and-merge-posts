@@ -568,8 +568,8 @@ class DuplicatePost{
 
 		$merge_back_link = admin_url()."?action=duplicate_post_save_to_original&post=".$post_id;
 		echo "<div class='show_diff_actions'>";
-			echo "<a class='button' href='".get_edit_post_link($original_post_id)."'>Go to original" . get_post_type_object(get_post_type())->labels->singular_name . "</a>";
-			echo "<a class='button' href='".get_edit_post_link($post_id)."'>Go to duplicated" . get_post_type_object(get_post_type())->labels->singular_name  ."</a>";
+			echo "<a class='button' href='".get_edit_post_link($original_post_id)."'>View original" . get_post_type_object(get_post_type())->labels->singular_name . "</a>";
+			echo "<a class='button' href='".get_edit_post_link($post_id)."'>View duplicated" . get_post_type_object(get_post_type())->labels->singular_name  ."</a>";
 			if($allow_merge_back){
 				 echo "<a class='button button-primary' href='". esc_url( $merge_back_link ) ."'>Merge back to Original " . get_post_type_object(get_post_type())->labels->singular_name  ."</a>";
 			}
