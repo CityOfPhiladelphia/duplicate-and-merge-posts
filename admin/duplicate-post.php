@@ -339,20 +339,24 @@ class DuplicatePost{
 						text-align: center;
 					}
 					.button.button-primary.button-large.save_as_new {
-						background: rgb(0, 144, 0);
-				border-color: rgb(0, 144, 0);
-				-webkit-box-shadow: none;
-				box-shadow: none;
-				color: #fff;
-				text-decoration: none;
-					}
+						-webkit-box-shadow: none;
+						box-shadow: none;
+						color: #fff;
+						text-decoration: none;
+						}
 					.button.button-primary.button-large.waiting {
-				background: #5E757E;
-				border-color: #5E757E;
-				-webkit-box-shadow: none;
-				box-shadow: none;
-				color: #fff;
-				text-decoration: none;
+						-webkit-box-shadow: none;
+						box-shadow: none;
+						color: #fff;
+						text-decoration: none;
+					}
+					#merge_back{
+						background: rgb(0, 144, 0);
+						border-color: rgb(0, 144, 0);
+					}
+					#save_as_new{
+						background: #5E757E;
+						border-color: #5E757E;
 					}
 				</style>
 			<script type="text/javascript">
